@@ -122,6 +122,14 @@ export function SiteFooter() {
             <ul className="mt-4 space-y-3">
               <li>
                 <Link
+                  href="/a-propos"
+                  className="text-sm text-white/60 transition-colors hover:text-white"
+                >
+                  À propos
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/mentions-legales"
                   className="text-sm text-white/60 transition-colors hover:text-white"
                 >

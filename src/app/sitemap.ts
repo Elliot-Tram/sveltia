@@ -21,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...articles,
     {
+      url: `${baseUrl}/a-propos`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.5,
+    },
+    {
       url: `${baseUrl}/mentions-legales`,
       lastModified: new Date(),
       changeFrequency: 'yearly' as const,

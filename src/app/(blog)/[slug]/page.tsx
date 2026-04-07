@@ -4,6 +4,7 @@ import { ArticleHeader } from "@/components/blog/article-header";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { AuthorBlock } from "@/components/blog/author-block";
 import { MedicalDisclaimer } from "@/components/blog/medical-disclaimer";
+import { MedicalReviewBadge } from "@/components/blog/medical-review-badge";
 import { getArticleBySlug, getAllSlugs } from "@/lib/articles";
 import { OzempicGuideComplet } from "@/components/blog/articles/ozempic-guide-complet";
 import { WegovyGuideComplet } from "@/components/blog/articles/wegovy-guide-complet";
@@ -247,6 +248,7 @@ export default async function ArticlePage({ params }: PageProps) {
         <div className="mx-auto flex max-w-7xl justify-center gap-10 px-4 py-10 sm:px-6">
           {/* Article body */}
           <div className="article-body min-w-0 max-w-[720px] flex-1">
+            <MedicalReviewBadge />
             <ContentComponent />
             <AuthorBlock
               name={article.author.name}
