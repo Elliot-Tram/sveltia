@@ -96,27 +96,11 @@ export default function APropos() {
         Ce que Sveltia n&apos;est pas
       </h2>
 
-      <ul className="mt-4 space-y-2 text-[15px] leading-relaxed text-muted-foreground">
-        <li className="flex items-start gap-2">
-          <span className="mt-1 text-red-500">&#10005;</span>
-          Sveltia n&apos;est <strong>pas un site médical</strong>. Nous ne
-          posons pas de diagnostic et ne prescrivons aucun traitement.
-        </li>
-        <li className="flex items-start gap-2">
-          <span className="mt-1 text-red-500">&#10005;</span>
-          Sveltia ne <strong>vend aucun médicament</strong> ni complément
-          alimentaire.
-        </li>
-        <li className="flex items-start gap-2">
-          <span className="mt-1 text-red-500">&#10005;</span>
-          Sveltia n&apos;est <strong>financé par aucun laboratoire</strong>{" "}
-          pharmaceutique.
-        </li>
-        <li className="flex items-start gap-2">
-          <span className="mt-1 text-red-500">&#10005;</span>
-          Nos contenus ne remplacent <strong>en aucun cas</strong> une
-          consultation médicale.
-        </li>
+      <ul className="mt-4 space-y-3 text-[15px] leading-relaxed text-muted-foreground">
+        <li>Sveltia n&apos;est <strong>pas un site médical</strong>. Nous ne posons pas de diagnostic et ne prescrivons aucun traitement.</li>
+        <li>Sveltia ne <strong>vend aucun médicament</strong> ni complément alimentaire.</li>
+        <li>Sveltia n&apos;est <strong>financé par aucun laboratoire</strong> pharmaceutique.</li>
+        <li>Nos contenus ne remplacent <strong>en aucun cas</strong> une consultation médicale.</li>
       </ul>
 
       <div className="mt-12 rounded-xl border-2 border-teal bg-teal-light/30 p-6 text-center sm:p-8">
