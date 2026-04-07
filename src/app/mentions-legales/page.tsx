@@ -20,11 +20,12 @@ export default function MentionsLegales() {
             Editeur du site
           </h2>
           <p>
-            Le site sveltia.fr est edite par Sveltia, site d&apos;information
-            independant sur les traitements GLP-1.
+            Le site sveltia.fr est un site d&apos;information independant sur
+            les traitements GLP-1, edite a titre personnel.
           </p>
           <p className="mt-1">
-            Responsable de la publication : Equipe Sveltia
+            Directeur de la publication : l&apos;editeur du site, joignable
+            a l&apos;adresse ci-dessous.
           </p>
           <p className="mt-1">
             Contact : contact@sveltia.fr
