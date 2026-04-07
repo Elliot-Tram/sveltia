@@ -172,7 +172,7 @@ export default function HomePage() {
 
               {/* Trust signals */}
               <AnimateOnScroll animation="fade-in-up" delay={400}>
-                <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:gap-8">
+                <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-6">
                   {[
                     "Information indépendante",
                     "Sources médicales vérifiées",
@@ -180,9 +180,9 @@ export default function HomePage() {
                   ].map((text) => (
                     <div
                       key={text}
-                      className="flex items-center gap-2 text-sm text-white/70"
+                      className="flex items-center gap-2 text-sm leading-snug text-white/70"
                     >
-                      <CheckCircle className="h-4 w-4 flex-shrink-0 text-teal-light" />
+                      <CheckCircle className="h-4 w-4 shrink-0 text-teal-light" />
                       {text}
                     </div>
                   ))}
