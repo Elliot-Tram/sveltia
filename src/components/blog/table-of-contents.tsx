@@ -124,7 +124,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
             />
             <nav
               aria-label="Sommaire de l'article"
-              className="fixed bottom-20 right-5 z-50 max-h-[70vh] w-72 overflow-y-auto rounded-lg border border-border bg-white p-5 shadow-xl"
+              className="fixed bottom-20 left-4 right-4 z-50 max-h-[70vh] overflow-y-auto rounded-lg border border-border bg-white p-5 shadow-xl sm:left-auto sm:right-5 sm:w-72"
             >
               <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
                 <List className="h-4 w-4 text-teal" />
