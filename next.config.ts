@@ -1,7 +1,24 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  trailingSlash: false,
+  headers: async () => [
+    {
+      source: "/:path*",
+      has: [
+        {
+          type: "host",
+          value: "(?!sveltia\\.fr).*",
+        },
+      ],
+      headers: [
+        {
+          key: "X-Robots-Tag",
+          value: "noindex, nofollow",
+        },
+      ],
+    },
+  ],
 };
 
 export default nextConfig;
