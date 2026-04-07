@@ -3,7 +3,7 @@ import { ArrowLeft, Home } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <section className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-20">
+    <section className="flex min-h-[60vh] flex-col items-center justify-center px-4 pb-20 pt-32">
       <p className="text-6xl font-bold text-teal">404</p>
       <h1 className="mt-4 font-heading text-2xl font-bold text-foreground sm:text-3xl">
         Page introuvable
