@@ -178,14 +178,22 @@
   color: #1a1a2e;
 }
 
-.article-body a {
+.article-body > p a,
+.article-body > ul a,
+.article-body > ol a,
+.article-body > blockquote a,
+.article-body > h3 a {
   color: #0d9488;
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: color 0.15s;
 }
 
-.article-body a:hover {
+.article-body > p a:hover,
+.article-body > ul a:hover,
+.article-body > ol a:hover,
+.article-body > blockquote a:hover,
+.article-body > h3 a:hover {
   color: #0f766e;
 }
 
