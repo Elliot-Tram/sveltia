@@ -1,16 +1,19 @@
 import type { MetadataRoute } from 'next'
-import { getAllSlugs } from '@/lib/articles'
+import { getAllSlugs, getArticleBySlug } from '@/lib/articles'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://sveltia.fr'
   const slugs = getAllSlugs()
 
-  const articles = slugs.map((slug) => ({
-    url: `${baseUrl}/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }))
+  const articles = slugs.map((slug) => {
+    const article = getArticleBySlug(slug)
+    return {
+      url: `${baseUrl}/${slug}`,
+      lastModified: new Date(article?.updatedAt ?? article?.publishedAt ?? new Date()),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }
+  })
 
   return [
     {
