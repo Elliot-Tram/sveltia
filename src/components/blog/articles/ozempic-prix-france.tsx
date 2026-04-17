@@ -82,7 +82,7 @@ export function OzempicPrixFrance() {
         Pour la <strong>perte de poids seule</strong>, sans diabète associé, l&apos;Ozempic n&apos;est pas remboursé. C&apos;est d&apos;ailleurs dans cette indication que la controverse a éclaté : des personnes non diabétiques se faisaient prescrire l&apos;Ozempic hors AMM pour perdre du poids, créant des tensions d&apos;approvisionnement pour les patients diabétiques qui en ont médicalement besoin.
       </p>
 
-      <CalloutBox variant="attention" title="Important">
+      <CalloutBox variant="warning" title="Important">
         <p>
           L&apos;Ozempic prescrit en dehors de l&apos;indication officielle (diabète de type 2) ne bénéficie d&apos;aucun remboursement et engage la responsabilité du prescripteur. Le <a href="https://www.has-sante.fr" target="_blank" rel="noopener noreferrer">Haute Autorité de Santé (HAS)</a> déconseille cette pratique.
         </p>
