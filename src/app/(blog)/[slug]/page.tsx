@@ -12,6 +12,7 @@ import { MounjaroGuideComplet } from "@/components/blog/articles/mounjaro-guide-
 import { OzempicNaturel } from "@/components/blog/articles/ozempic-naturel";
 import { OzempicFace } from "@/components/blog/articles/ozempic-face";
 import { SemaglutideOral } from "@/components/blog/articles/semaglutide-oral";
+import { OzempicPrixFrance } from "@/components/blog/articles/ozempic-prix-france";
 
 /* Map slugs to content components */
 const articleContent: Record<string, React.ComponentType> = {
@@ -21,6 +22,7 @@ const articleContent: Record<string, React.ComponentType> = {
   "ozempic-naturel-alternatives-semaglutide": OzempicNaturel,
   "ozempic-face-visage-semaglutide": OzempicFace,
   "semaglutide-oral-rybelsus-comprime": SemaglutideOral,
+  "ozempic-prix-france": OzempicPrixFrance,
 };
 
 /* Map slugs to hero images */
@@ -48,6 +50,10 @@ const articleHeroImages: Record<string, { src: string; alt: string }> = {
   "semaglutide-oral-rybelsus-comprime": {
     src: "/images/semaglutide-oral-hero.webp",
     alt: "Illustration d'un comprimé de sémaglutide oral (Rybelsus)",
+  },
+  "ozempic-prix-france": {
+    src: "/images/ozempic-hero.webp",
+    alt: "Illustration d'un stylo Ozempic et d'une boîte de médicament avec un prix affiché",
   },
 };
 

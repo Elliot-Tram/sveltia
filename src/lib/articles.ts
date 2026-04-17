@@ -298,6 +298,40 @@ export const articles: Article[] = [
       { id: "faq", text: "Questions fréquentes (FAQ)", level: 2 },
     ],
   },
+  {
+    slug: "ozempic-prix-france",
+    title: "Prix de l'Ozempic en France : coût réel, remboursements et alternatives 2026",
+    subtitle:
+      "Combien coûte vraiment l'Ozempic en pharmacie ? Remboursement, prix sans ordonnance, comparaison Wegovy et Mounjaro.",
+    description:
+      "Prix de l'Ozempic en France en 2026 : tarifs par dosage, conditions de remboursement par la Sécurité sociale, alternatives GLP-1 et comparatif Wegovy. Tout ce qu'il faut savoir avant de se lancer.",
+    category: "Traitements GLP-1",
+    tags: [
+      "ozempic",
+      "prix ozempic",
+      "remboursement ozempic",
+      "sémaglutide",
+      "wegovy",
+      "glp-1",
+    ],
+    publishedAt: "2026-04-17",
+    updatedAt: "2026-04-17",
+    readingTime: 10,
+    author: {
+      name: "Équipe Sveltia",
+      role: "Rédaction médicale",
+      bio: "L'équipe éditoriale de Sveltia réunit des rédacteurs spécialisés en santé. Nos contenus sont fondés sur les recommandations officielles (HAS, ANSM, Vidal) et les études cliniques publiées dans des revues à comité de lecture.",
+    },
+    toc: [
+      { id: "prix-ozempic-france", text: "Prix de l'Ozempic en France", level: 2 },
+      { id: "remboursement-ozempic", text: "Qui peut se faire rembourser ?", level: 2 },
+      { id: "ozempic-vs-wegovy-prix", text: "Ozempic vs Wegovy : comparatif prix", level: 2 },
+      { id: "ruptures-stock", text: "Le problème des ruptures de stock", level: 2 },
+      { id: "obtenir-ordonnance", text: "Comment obtenir une ordonnance", level: 2 },
+      { id: "comparaison-glp1", text: "Comparatif traitements GLP-1", level: 2 },
+      { id: "faq-prix", text: "Questions fréquentes", level: 2 },
+    ],
+  },
 ];
 
 export function getArticleBySlug(slug: string): Article | undefined {
