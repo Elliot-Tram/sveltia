@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { getAllSlugs, getArticleBySlug } from '@/lib/articles'
+import { getAllMdxArticles } from '@/lib/mdx-articles'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://sveltia.fr'
@@ -15,6 +16,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   })
 
+  const legacySet = new Set(slugs)
+  const mdxArticles = getAllMdxArticles()
+    .filter((a) => !legacySet.has(a.slug))
+    .map((a) => ({
+      url: `${baseUrl}/${a.slug}`,
+      lastModified: a.date ? new Date(a.date) : new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }))
+
   return [
     {
       url: baseUrl,
@@ -23,6 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     ...articles,
+    ...mdxArticles,
     {
       url: `${baseUrl}/a-propos`,
       lastModified: new Date(),

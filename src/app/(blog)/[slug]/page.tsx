@@ -6,6 +6,14 @@ import { AuthorBlock } from "@/components/blog/author-block";
 import { MedicalDisclaimer } from "@/components/blog/medical-disclaimer";
 import { MedicalReviewBadge } from "@/components/blog/medical-review-badge";
 import { getArticleBySlug, getAllSlugs } from "@/lib/articles";
+import {
+  getAllMdxSlugs,
+  getMdxArticle,
+} from "@/lib/mdx-articles";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
+import Link from "next/link";
 import { OzempicGuideComplet } from "@/components/blog/articles/ozempic-guide-complet";
 import { WegovyGuideComplet } from "@/components/blog/articles/wegovy-guide-complet";
 import { MounjaroGuideComplet } from "@/components/blog/articles/mounjaro-guide-complet";
@@ -62,7 +70,10 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return getAllSlugs().map((slug) => ({ slug }));
+  const legacy = getAllSlugs();
+  const legacySet = new Set(legacy);
+  const mdx = getAllMdxSlugs().filter((s) => !legacySet.has(s));
+  return [...legacy, ...mdx].map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -71,27 +82,34 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = getArticleBySlug(slug);
 
-  if (!article) {
-    return { title: "Article introuvable" };
-  }
-
-  return {
-    title: article.title,
-    description: article.description,
-    keywords: article.tags,
-    openGraph: {
+  if (article) {
+    return {
       title: article.title,
       description: article.description,
-      type: "article",
-      publishedTime: article.publishedAt,
-      modifiedTime: article.updatedAt,
-      locale: "fr_FR",
-      siteName: "Sveltia",
-      authors: [article.author.name],
-    },
-    alternates: {
-      canonical: `https://sveltia.fr/${article.slug}`,
-    },
+      keywords: article.tags,
+      openGraph: {
+        title: article.title,
+        description: article.description,
+        type: "article",
+        publishedTime: article.publishedAt,
+        modifiedTime: article.updatedAt,
+        locale: "fr_FR",
+        siteName: "Sveltia",
+        authors: [article.author.name],
+      },
+      alternates: {
+        canonical: `https://sveltia.fr/${article.slug}`,
+      },
+    };
+  }
+
+  const mdx = getMdxArticle(slug);
+  if (!mdx) return { title: "Article introuvable" };
+  return {
+    title: mdx.title,
+    description: mdx.description,
+    keywords: mdx.keywords,
+    alternates: { canonical: `https://sveltia.fr/${mdx.slug}` },
   };
 }
 
@@ -100,7 +118,9 @@ export default async function ArticlePage({ params }: PageProps) {
   const article = getArticleBySlug(slug);
 
   if (!article) {
-    notFound();
+    const mdx = getMdxArticle(slug);
+    if (!mdx || mdx.draft) notFound();
+    return <MdxArticleView slug={slug} article={mdx} />;
   }
 
   const ContentComponent = articleContent[slug];
@@ -266,6 +286,70 @@ export default async function ArticlePage({ params }: PageProps) {
 
           {/* Sticky TOC sidebar */}
           <TableOfContents items={article.toc} />
+        </div>
+      </article>
+    </>
+  );
+}
+
+function MdxArticleView({
+  slug,
+  article,
+}: {
+  slug: string;
+  article: NonNullable<ReturnType<typeof getMdxArticle>>;
+}) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.description,
+    datePublished: article.date,
+    dateModified: article.date,
+    author: { "@type": "Organization", name: "Sveltia", url: "https://sveltia.fr" },
+    publisher: { "@type": "Organization", name: "Sveltia", url: "https://sveltia.fr" },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://sveltia.fr/${slug}`,
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+        <nav className="mb-6 text-sm text-muted-foreground">
+          <Link href="/" className="hover:underline">
+            Accueil
+          </Link>{" "}
+          / <span>{article.title}</span>
+        </nav>
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            {article.title}
+          </h1>
+          {article.description && (
+            <p className="mt-4 text-lg text-muted-foreground">
+              {article.description}
+            </p>
+          )}
+          {article.date && (
+            <p className="mt-3 text-sm text-muted-foreground">
+              {new Date(article.date).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
+          )}
+        </header>
+        <div className="prose prose-slate max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>
+            {article.content}
+          </ReactMarkdown>
         </div>
       </article>
     </>
