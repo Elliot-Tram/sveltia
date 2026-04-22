@@ -4,6 +4,11 @@ import matter from "gray-matter";
 
 const ARTICLES_DIR = path.join(process.cwd(), "content/articles");
 
+export interface MdxArticleFaq {
+  question: string;
+  reponse: string;
+}
+
 export interface MdxArticleFrontmatter {
   title: string;
   description?: string;
@@ -12,6 +17,10 @@ export interface MdxArticleFrontmatter {
   draft?: boolean;
   keywords?: string[];
   image?: string;
+  keyPoints?: string[];
+  faqs?: MdxArticleFaq[];
+  category?: string;
+  readingTime?: string;
 }
 
 export interface MdxArticle extends MdxArticleFrontmatter {
@@ -50,6 +59,29 @@ export function getMdxArticle(slug: string): MdxArticle | null {
     draft: data.draft === true,
     keywords: data.keywords as string[] | undefined,
     image: data.image as string | undefined,
+    keyPoints: Array.isArray(data.keyPoints)
+      ? (data.keyPoints as unknown[]).map(String).filter(Boolean)
+      : undefined,
+    faqs: Array.isArray(data.faqs)
+      ? (data.faqs as unknown[])
+          .map((f) => {
+            if (!f || typeof f !== "object") return null;
+            const rec = f as Record<string, unknown>;
+            const question = typeof rec.question === "string" ? rec.question : "";
+            const reponse =
+              typeof rec.reponse === "string"
+                ? rec.reponse
+                : typeof rec.answer === "string"
+                ? (rec.answer as string)
+                : "";
+            if (!question || !reponse) return null;
+            return { question, reponse };
+          })
+          .filter((f): f is MdxArticleFaq => f !== null)
+      : undefined,
+    category: typeof data.category === "string" ? data.category : undefined,
+    readingTime:
+      typeof data.readingTime === "string" ? data.readingTime : undefined,
     content,
   };
 }

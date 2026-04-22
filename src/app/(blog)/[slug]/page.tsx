@@ -292,6 +292,36 @@ export default async function ArticlePage({ params }: PageProps) {
   );
 }
 
+function slugifyHeading(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function extractTocItems(content: string): { id: string; label: string }[] {
+  const items: { id: string; label: string }[] = [];
+  const lines = content.split("\n");
+  let inCodeBlock = false;
+  for (const line of lines) {
+    if (line.trim().startsWith("```")) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+    if (inCodeBlock) continue;
+    const match = /^##\s+(.+?)\s*$/.exec(line);
+    if (match) {
+      const label = match[1].replace(/[*_`]/g, "").trim();
+      if (label) items.push({ id: slugifyHeading(label), label });
+    }
+  }
+  return items;
+}
+
 function MdxArticleView({
   slug,
   article,
@@ -299,7 +329,10 @@ function MdxArticleView({
   slug: string;
   article: NonNullable<ReturnType<typeof getMdxArticle>>;
 }) {
-  const structuredData = {
+  const tocItems = extractTocItems(article.content);
+  const hasFaqs = !!(article.faqs && article.faqs.length > 0);
+
+  const structuredData: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
@@ -314,44 +347,173 @@ function MdxArticleView({
     },
   };
 
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: "https://sveltia.fr" },
+      { "@type": "ListItem", position: 2, name: article.title, item: `https://sveltia.fr/${slug}` },
+    ],
+  };
+
+  const faqJsonLd = hasFaqs
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: article.faqs!.map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.reponse },
+        })),
+      }
+    : null;
+
   return (
-    <>
+    <div className="bg-white min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <nav className="mb-6 text-sm text-muted-foreground">
-          <Link href="/" className="hover:underline">
-            Accueil
-          </Link>{" "}
-          / <span>{article.title}</span>
-        </nav>
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+
+      {/* Hero branded teal */}
+      <section className="bg-[#0d9488]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <nav className="text-sm text-teal-100 mb-6">
+            <Link href="/" className="hover:text-white transition-colors duration-200">
+              Accueil
+            </Link>
+            <span className="mx-2">/</span>
+            <span className="text-teal-50">{article.title}</span>
+          </nav>
+          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-white leading-[1.15] mb-4">
             {article.title}
           </h1>
-          {article.description && (
-            <p className="mt-4 text-lg text-muted-foreground">
-              {article.description}
-            </p>
+          {(article.category || article.date || article.readingTime) && (
+            <div className="flex items-center gap-3 mt-4 text-sm text-teal-100 flex-wrap">
+              {article.category && (
+                <span className="bg-[#0f766e] text-teal-50 px-2.5 py-0.5 rounded-md text-xs font-semibold">
+                  {article.category}
+                </span>
+              )}
+              {article.category && article.date && (
+                <span className="w-1 h-1 rounded-full bg-teal-200/50" />
+              )}
+              {article.date && (
+                <time dateTime={article.date}>
+                  {new Date(article.date).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </time>
+              )}
+              {article.readingTime && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-teal-200/50" />
+                  <span>{article.readingTime} de lecture</span>
+                </>
+              )}
+            </div>
           )}
-          {article.date && (
-            <p className="mt-3 text-sm text-muted-foreground">
-              {new Date(article.date).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
-          )}
-        </header>
-        <div className="prose prose-slate max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>
-            {article.content}
-          </ReactMarkdown>
         </div>
-      </article>
-    </>
+      </section>
+
+      {/* 2 colonnes : article + TOC sticky */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="flex gap-12">
+          <article className="flex-1 min-w-0 article-content prose prose-slate prose-lg max-w-none">
+            {article.keyPoints && article.keyPoints.length > 0 && (
+              <div className="not-prose bg-[#f0fdfa] border border-[#ccfbf1] rounded-xl p-6 mb-10">
+                <p className="font-bold text-slate-900 text-base mb-3">
+                  Points clés à retenir
+                </p>
+                <ul className="text-sm text-slate-700 leading-relaxed space-y-2">
+                  {article.keyPoints.map((point, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-[#0d9488] font-bold mt-0.5 flex-shrink-0">
+                        {i + 1}.
+                      </span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>
+              {article.content}
+            </ReactMarkdown>
+
+            {hasFaqs && (
+              <section id="faq" className="scroll-mt-24">
+                <h2>Questions fréquentes</h2>
+                <div className="space-y-3 not-prose">
+                  {article.faqs!.map((faq, i) => (
+                    <details
+                      key={i}
+                      className="group border border-slate-200 rounded-xl overflow-hidden"
+                    >
+                      <summary className="flex items-center justify-between cursor-pointer p-4 bg-white hover:bg-slate-50 transition-colors duration-200 text-slate-900 font-semibold text-base">
+                        {faq.question}
+                        <svg
+                          className="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform duration-300 flex-shrink-0 ml-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </summary>
+                      <div className="px-4 pb-4">
+                        <p className="text-base text-slate-500 leading-relaxed">
+                          {faq.reponse}
+                        </p>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </section>
+            )}
+          </article>
+
+          {tocItems.length > 0 && (
+            <aside className="hidden xl:block w-64 flex-shrink-0">
+              <div className="sticky top-24">
+                <nav aria-label="Sommaire" className="text-sm">
+                  <p className="font-semibold text-slate-900 mb-3">Sommaire</p>
+                  <ul className="space-y-2 border-l border-slate-200 pl-4">
+                    {tocItems.map((item) => (
+                      <li key={item.id}>
+                        <a
+                          href={`#${item.id}`}
+                          className="text-slate-600 hover:text-[#0d9488] transition-colors duration-200 block"
+                        >
+                          {item.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+            </aside>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
