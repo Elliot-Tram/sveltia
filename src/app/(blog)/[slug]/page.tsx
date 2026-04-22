@@ -13,6 +13,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
+import GithubSlugger from "github-slugger";
 import Link from "next/link";
 import { OzempicGuideComplet } from "@/components/blog/articles/ozempic-guide-complet";
 import { WegovyGuideComplet } from "@/components/blog/articles/wegovy-guide-complet";
@@ -292,18 +293,8 @@ export default async function ArticlePage({ params }: PageProps) {
   );
 }
 
-function slugifyHeading(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-}
-
 function extractTocItems(content: string): { id: string; label: string }[] {
+  const slugger = new GithubSlugger();
   const items: { id: string; label: string }[] = [];
   const lines = content.split("\n");
   let inCodeBlock = false;
@@ -316,7 +307,7 @@ function extractTocItems(content: string): { id: string; label: string }[] {
     const match = /^##\s+(.+?)\s*$/.exec(line);
     if (match) {
       const label = match[1].replace(/[*_`]/g, "").trim();
-      if (label) items.push({ id: slugifyHeading(label), label });
+      if (label) items.push({ id: slugger.slug(label), label });
     }
   }
   return items;
